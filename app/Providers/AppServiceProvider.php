@@ -6,6 +6,7 @@ use App\Models\Post;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,6 +23,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+        
         View::composer('components.site-footer', function ($view) {
             $items = Cache::remember('footer_recent_posts', 600, function () {
                 return Post::orderBy('published_at', 'desc')
